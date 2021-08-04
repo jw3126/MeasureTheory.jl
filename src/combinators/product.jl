@@ -119,10 +119,9 @@ export rand!
 using Random: rand!, GLOBAL_RNG, AbstractRNG
 
 
-function logdensity(d::ProductMeasure{F,I}, x) where {F, I<:Base.Generator}
-    sum((logdensity(dj, xj) for (dj, xj) in zip(marginals(d), x)))
+function logdensity(d::ProductMeasure, x)
+    mapreduce((pj,xj) -> logdensity(d.f(pj), xj), +, d.pars, x)
 end
-
 
 function Base.rand(rng::AbstractRNG, ::Type{T}, d::ProductMeasure{F,I}) where {T,F,I<:Base.Generator}
     mar = marginals(d)
